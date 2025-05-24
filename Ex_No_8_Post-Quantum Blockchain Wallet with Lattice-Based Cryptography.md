@@ -38,49 +38,30 @@ contract PostQuantumWallet {
         bool registered;
     }
 
-    mapping(address => User) private users; // Made private to hide from Remix UI
+    mapping(address => User) public users;
     mapping(address => uint256) public balances;
 
     event UserRegistered(address user, bytes32 publicKeyHash);
     event TransactionVerified(address from, address to, uint256 amount);
 
-    // Constructor
-    constructor() {}
-
-    // Generate a quantum-safe signature (simulated using keccak256)
-    function generateSignature(address _sender, address _recipient, uint256 _amount) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_sender, _recipient, _amount));
-    }
-
-    // Generate a simulated lattice-based public key hash
-    function generatePublicKeyHash(string memory _publicKey) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_publicKey));
-    }
-
-    // Register a user with a public key hash
     function registerUser(bytes32 _publicKeyHash) public {
         require(!users[msg.sender].registered, "User already registered");
         users[msg.sender] = User(_publicKeyHash, true);
         emit UserRegistered(msg.sender, _publicKeyHash);
     }
 
-    // Send funds using quantum-safe simulated signature
     function sendFunds(address _to, uint256 _amount, bytes32 _signature) public {
         require(users[msg.sender].registered, "Sender not registered");
         require(users[_to].registered, "Recipient not registered");
         require(balances[msg.sender] >= _amount, "Insufficient funds");
 
-        bytes32 calculatedSignature = generateSignature(msg.sender, _to, _amount);
-        require(calculatedSignature == _signature, "Invalid quantum-safe signature");
+        bytes32 calculatedHash = keccak256(abi.encodePacked(msg.sender, _to, _amount));
+        require(calculatedHash == _signature, "Invalid quantum-safe signature");
 
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         emit TransactionVerified(msg.sender, _to, _amount);
     }
-
-    // Deposit funds to the wallet
-    function depositFunds() public payable {
-        balances[msg.sender] += msg.value;}
 }
 ```
 
@@ -93,6 +74,19 @@ Transactions require a quantum-resistant signature for authentication.
 
 If a traditional quantum-vulnerable hash is used, the transaction fails.
 
+![8(1)](https://github.com/user-attachments/assets/e21578b1-9908-411c-9335-64d8635f0b27)
+
+![8(2)](https://github.com/user-attachments/assets/34a916c8-015c-4c0e-9184-60b20e181012)
+
+![8(3)](https://github.com/user-attachments/assets/62adfe19-6849-4aaa-baa9-cfa952a77b4e)
+
+![8(4)](https://github.com/user-attachments/assets/301d4992-f739-4742-b757-054baf0fb94b)
+
+![8(5)](https://github.com/user-attachments/assets/5faa9646-8227-4231-9a3b-5d03ddd9a879)
+
+![8(6)](https://github.com/user-attachments/assets/58e254ff-5a79-4e6f-a6e4-611475f0e171)
+
+![8(7)](https://github.com/user-attachments/assets/b15919e4-ee34-4b62-80ae-b39a0daf66f0)
 
 # RESULT : 
 High-Level Overview:
@@ -106,4 +100,3 @@ Demonstrates how Ethereum will transition to post-quantum security.
 
 
 Inspired by NIST’s post-quantum cryptography competition.
-
